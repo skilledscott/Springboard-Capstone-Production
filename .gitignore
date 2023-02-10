@@ -1,0 +1,7 @@
+# python virtual environment
+env/
+# python cache
+__pycache__/
+
+# javascript node modules
+node_modules/
