@@ -39,6 +39,18 @@ Instead, it will copy all the configuration files and the transitive dependencie
 
 You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
 
+### `npm run css-build`
+
+Run this to build the styles css file from the scss file
+in the src/styles/ directory. This is imported in App.js
+for the bulma styling.
+
+### `npm run css-watch`
+
+Builds the css file like css-build, but puts it in watch
+mode. So any changes saved to mystyles.scss will trigger
+css-build.
+
 ## Learn More
 
 You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).

@@ -1,0 +1,17 @@
+@charset "utf-8";
+
+// Import only what you need from Bulma
+@import "../../node_modules/bulma/bulma.sass";
+
+// set background to a faint, light blue
+$home-background-color: hsl(200, 100%, 92%);
+
+html {
+    background-color: $home-background-color;
+}
+
+.columns {
+    height: 45vh;
+    padding-left: 2.5vw;
+    padding-right: 2.5vw;
+}
