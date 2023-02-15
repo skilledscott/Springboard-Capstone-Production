@@ -20,6 +20,7 @@ function App() {
                 {/* left column */}
                 <div className='column'>
                     <p className='title'>image column</p>
+                    <button className='button is-warning mr-3'>Upload</button>
                     <button className='button is-link'>Predict</button>
                 </div>
 
