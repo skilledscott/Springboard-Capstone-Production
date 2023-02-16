@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import axios from 'axios';
 import './styles/mystyles.css';
+import carImg from './img/img51.jpg';
 
 const App = () => {
     const [preds, setPreds] = useState('none');
@@ -31,10 +32,12 @@ const App = () => {
             </div>
 
             {/* left column: image, right column: api output */}
-            <div className='columns is-mobile'>
+            <div className='columns is-mobile mt-4'>
                 {/* left column */}
                 <div className='column'>
-                    <p className='title'>image column</p>
+                    <figure className='image block user-image'>
+                        <img src={carImg}></img>
+                    </figure>
                     <button className='button is-warning mr-3'>Upload</button>
                     <button className='button is-link'
                         onClick={queryDetectApi}>
@@ -48,7 +51,7 @@ const App = () => {
                     <p className='is-size-4'>{preds}</p>
                 </div>
             </div>
-        </div>
+        </div >
     );
 }
 
