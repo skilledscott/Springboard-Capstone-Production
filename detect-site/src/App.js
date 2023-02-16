@@ -1,10 +1,12 @@
 import { useState } from 'react';
 import axios from 'axios';
+
 import './styles/mystyles.css';
 import carImg from './img/img51.jpg';
 
 const App = () => {
     const [preds, setPreds] = useState('none');
+    const [image, setImage] = useState(null);
 
     /* Using axios, get a response from the detect-api setup in Flask */
     const queryDetectApi = () => {
@@ -15,6 +17,10 @@ const App = () => {
         }).catch((error) => {
             console.log(error);
         });
+    }
+
+    const uploadFile = (e) => {
+        setImage(URL.createObjectURL(e.target.files[0]));
     }
 
     return (
@@ -36,13 +42,22 @@ const App = () => {
                 {/* left column */}
                 <div className='column'>
                     <figure className='image block user-image'>
-                        <img src={carImg}></img>
+                        <img src={image ? image : carImg}></img>
                     </figure>
-                    <button className='button is-warning mr-3'>Upload</button>
-                    <button className='button is-link'
-                        onClick={queryDetectApi}>
-                        Predict
-                    </button>
+
+                    {<div className='file is-warning'>
+                        <label className='file-label'>
+                            <input className="file-input" type="file"
+                                onChange={uploadFile} />
+                            <span className='file-cta'>
+                                Upload
+                            </span>
+                        </label>
+                        <button className='button is-link ml-2'
+                            onClick={queryDetectApi}>
+                            Predict
+                        </button>
+                    </div>}
                 </div>
 
                 {/* right column */}
