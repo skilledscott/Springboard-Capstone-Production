@@ -9,8 +9,8 @@ const App = () => {
     const queryDetectApi = () => {
         const path = 'detect-api';
         axios.get(path).then((response) => {
-            console.log(response.data);
-            setPreds(response.data);
+            console.log(response);
+            setPreds('Got response! Check console.');
         }).catch((error) => {
             console.log(error);
         });
