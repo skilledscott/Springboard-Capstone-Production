@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import axios from 'axios';
 
 import './styles/mystyles.css';
@@ -6,20 +6,53 @@ import carImg from './img/img51.jpg';
 
 const App = () => {
     const [preds, setPreds] = useState('none');
+    const [file, setFile] = useState(null);
     const [image, setImage] = useState(null);
 
     /* Using axios, get a response from the detect-api setup in Flask */
     const queryDetectApi = () => {
-        const path = 'detect-api';
-        axios.get(path).then((response) => {
-            console.log(response);
-            setPreds('Got response! Check console.');
-        }).catch((error) => {
-            console.log(error);
-        });
+        // const url = 'get-preds';
+        const url = 'draw-boxes'
+
+        let formData = new FormData();
+        formData.append('file', file);
+
+        const config = {
+            headers: { 'content-type': 'multipart/form-data' }
+        };
+
+        axios.post(url, formData, config).then((response) => {
+            // get the output image data, this is stored in a decoded 64bit hex/string
+            let output_image = response.data['output_image'];
+
+            // atob decodes output_image, which was encoded using base64 encoding
+            // bytecharacters now contains ASCII string of the decoded data
+            const byteCharacters = atob(output_image);
+
+            // use charCodeAt to get integer representations of the ASCII chars in byteCharacters
+            const byteNumbers = new Array(byteCharacters.length);
+            for (let i = 0; i < byteCharacters.length; i++) {
+                byteNumbers[i] = byteCharacters.charCodeAt(i);
+            }
+
+            //  cast byteNumbers to unsigned 8-bit integer array
+            const byteArray = new Uint8Array(byteNumbers);
+
+            // create a blob from this byteArray, formatted as a jpeg image
+            const blob = new Blob([byteArray], { type: 'image/jpeg' });
+
+            // create an object url pointing to the blob and overwrite the current image
+            setImage(URL.createObjectURL(blob));
+        })
     }
 
+    // call this function on the user choosing a local file from the menu
     const uploadFile = (e) => {
+        // set the file to the chosen user file which will be sent to the api backend
+        setFile(e.target.files[0]);
+
+        // set the image to a pointer to the blob itself, which will be used to render
+        // the image on the screen
         setImage(URL.createObjectURL(e.target.files[0]));
     }
 
@@ -46,15 +79,15 @@ const App = () => {
                     </figure>
 
                     {<div className='file is-warning'>
+                        {/* Upload button */}
                         <label className='file-label'>
-                            <input className="file-input" type="file"
-                                onChange={uploadFile} />
+                            <input className="file-input" type="file" onChange={uploadFile} />
                             <span className='file-cta'>
                                 Upload
                             </span>
                         </label>
-                        <button className='button is-link ml-2'
-                            onClick={queryDetectApi}>
+                        {/* Predict button */}
+                        <button className='button is-success ml-2' onClick={queryDetectApi}>
                             Predict
                         </button>
                     </div>}
