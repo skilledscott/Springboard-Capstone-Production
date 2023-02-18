@@ -30,3 +30,10 @@ bounding boxes and labels over our original image.
   the backend.
 - The user can go to a separate page and create bounding box labels
   and coordinates for their image, and save them to a csv file.
+
+---
+
+## References
+
+- Flask backend with PyTorch: https://pytorch.org/tutorials/intermediate/flask_rest_api_tutorial.html
+- Converting bytestring to blob: https://stackoverflow.com/questions/16245767/creating-a-blob-from-a-base64-string-in-javascript
