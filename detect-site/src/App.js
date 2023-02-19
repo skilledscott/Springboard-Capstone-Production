@@ -7,7 +7,8 @@ import carImg from './img/img51.jpg';
 const App = () => {
     const [preds, setPreds] = useState('none');
     const [file, setFile] = useState(null);
-    const [image, setImage] = useState(null);
+    const [image, setImage] = useState('');
+
 
     /* Using axios, get a response from the detect-api setup in Flask */
     const queryDetectApi = () => {
@@ -15,7 +16,8 @@ const App = () => {
         const url = 'draw-boxes'
 
         let formData = new FormData();
-        formData.append('file', file);
+        // formData.append('file', file);
+        formData.append('file', file)
 
         const config = {
             headers: { 'content-type': 'multipart/form-data' }
@@ -43,17 +45,25 @@ const App = () => {
 
             // create an object url pointing to the blob and overwrite the current image
             setImage(URL.createObjectURL(blob));
+
+            // set file to null to prevent user from calling predict api for no reason
+            setFile(null);
         })
     }
 
     // call this function on the user choosing a local file from the menu
     const uploadFile = (e) => {
-        // set the file to the chosen user file which will be sent to the api backend
-        setFile(e.target.files[0]);
+        if (e.target.files[0] && e.target.files[0].type === 'image/jpeg') {
+            // revoke previous file object url
+            URL.revokeObjectURL(file);
 
-        // set the image to a pointer to the blob itself, which will be used to render
-        // the image on the screen
-        setImage(URL.createObjectURL(e.target.files[0]));
+            // set the file to the chosen user file which will be sent to the api backend
+            setFile(e.target.files[0]);
+
+            // set the image to a pointer to the blob itself, which will be used to render
+            // the image on the screen
+            setImage(URL.createObjectURL(e.target.files[0]));
+        }
     }
 
     return (
@@ -75,7 +85,7 @@ const App = () => {
                 {/* left column */}
                 <div className='column'>
                     <figure className='image block user-image'>
-                        <img src={image ? image : carImg}></img>
+                        <img src={image ? image : carImg} alt='prediction'></img>
                     </figure>
 
                     {<div className='file is-warning'>
@@ -87,7 +97,7 @@ const App = () => {
                             </span>
                         </label>
                         {/* Predict button */}
-                        <button className='button is-success ml-2' onClick={queryDetectApi}>
+                        <button className='button is-success ml-2' onClick={queryDetectApi} disabled={!file}>
                             Predict
                         </button>
                     </div>}
@@ -95,8 +105,8 @@ const App = () => {
 
                 {/* right column */}
                 <div className='column'>
-                    <p className='title'>api response column</p>
-                    <p className='is-size-4'>{preds}</p>
+                    <p className='title'>Click upload to choose an image, then hit 'Predict'</p>
+                    {/* <p className='is-size-4'>{preds}</p> */}
                 </div>
             </div>
         </div >
