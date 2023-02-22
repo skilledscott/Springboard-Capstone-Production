@@ -1,22 +1,20 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import axios from 'axios';
 
 import './styles/mystyles.css';
 import carImg from './img/img51.jpg';
 
 const App = () => {
-    const [preds, setPreds] = useState('none');
     const [file, setFile] = useState(null);
     const [image, setImage] = useState('');
 
 
     /* Using axios, get a response from the detect-api setup in Flask */
     const queryDetectApi = () => {
-        // const url = 'get-preds';
-        const url = 'draw-boxes'
+        const url = 'get-preds';
+        // const url = 'draw-boxes'
 
         let formData = new FormData();
-        // formData.append('file', file);
         formData.append('file', file)
 
         const config = {
@@ -106,7 +104,7 @@ const App = () => {
                 {/* right column */}
                 <div className='column'>
                     <p className='title'>Click upload to choose an image, then hit 'Predict'</p>
-                    {/* <p className='is-size-4'>{preds}</p> */}
+                    <p className='title'>Confidence threshold set to: 0.5</p>
                 </div>
             </div>
         </div >
