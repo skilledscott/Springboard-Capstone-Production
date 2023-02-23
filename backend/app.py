@@ -58,15 +58,12 @@ def get_preds():
         # the numeric label ids
         pred['categories'] = convert_labels_to_categories(pred['labels'])
 
-        print(pred['scores'] > 0.5)
         # draw bounding boxes over torch_image
         box_image = draw_bounding_boxes(torch_image, 
                                         boxes=pred['boxes'],
                                         labels=pred['categories'],
                                         width=2,
-                                        colors='red',
-                                        font='arial',
-                                        font_size=24)
+                                        colors='red')
         
         # transform image back to PIL image
         output_image = T.ToPILImage()(box_image)

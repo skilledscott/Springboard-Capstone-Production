@@ -19,6 +19,16 @@ bounding boxes and labels over our original image.
 
 ---
 
+## Production notes
+
+Followed this guide for hosting my site on AWS
+https://adamraudonis.medium.com/how-to-deploy-a-website-on-aws-with-docker-flask-react-from-scratch-d0845ebd9da4
+
+Since I work on windows, I used 'waitress' instead of 'gunicorn'.
+waitress-serve --listen=127.0.0.1:5000 wsgi:app
+
+---
+
 ## Backlog user stories
 
 - The user can upload a directory with many images, along with 
