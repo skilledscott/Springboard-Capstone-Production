@@ -12,7 +12,6 @@ const App = () => {
     /* Using axios, get a response from the detect-api setup in Flask */
     const queryDetectApi = () => {
         const url = 'get-preds';
-        // const url = 'draw-boxes'
 
         let formData = new FormData();
         formData.append('file', file)
