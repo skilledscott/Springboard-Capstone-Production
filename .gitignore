@@ -5,6 +5,7 @@ __pycache__/
 
 # javascript node modules
 node_modules/
+build/
 
 # mystyles.css is a large file that can be built from mystyles.scss
 mystyles.css
