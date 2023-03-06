@@ -1,109 +1,79 @@
-import { useState } from 'react';
-import axios from 'axios';
+import { useState, useEffect } from 'react';
 
 import './styles/mystyles.css';
-import carImg from './img/img51.jpg';
 
 const App = () => {
-    const [file, setFile] = useState(null);
-    const [image, setImage] = useState('');
+    const [image, setImage] = useState(null);
+    const [imageURL, setImageURL] = useState('');
 
 
-    /* Using axios, get a response from the detect-api setup in Flask */
-    const queryDetectApi = () => {
-        const url = 'get-preds';
+    useEffect(() => {
+        if (image == null) return;
+        setImageURL(URL.createObjectURL(image));
+    }, [image]);
 
-        let formData = new FormData();
-        formData.append('file', file)
 
-        const config = {
-            headers: { 'content-type': 'multipart/form-data' }
-        };
-
-        axios.post(url, formData, config).then((response) => {
-            // get the output image data, this is stored in a decoded 64bit hex/string
-            let output_image = response.data['output_image'];
-
-            // atob decodes output_image, which was encoded using base64 encoding
-            // bytecharacters now contains ASCII string of the decoded data
-            const byteCharacters = atob(output_image);
-
-            // use charCodeAt to get integer representations of the ASCII chars in byteCharacters
-            const byteNumbers = new Array(byteCharacters.length);
-            for (let i = 0; i < byteCharacters.length; i++) {
-                byteNumbers[i] = byteCharacters.charCodeAt(i);
-            }
-
-            //  cast byteNumbers to unsigned 8-bit integer array
-            const byteArray = new Uint8Array(byteNumbers);
-
-            // create a blob from this byteArray, formatted as a jpeg image
-            const blob = new Blob([byteArray], { type: 'image/jpeg' });
-
-            // create an object url pointing to the blob and overwrite the current image
-            setImage(URL.createObjectURL(blob));
-
-            // set file to null to prevent user from calling predict api for no reason
-            setFile(null);
-        })
+    const onImageChange = (e) => {
+        setImage(e.target.files[0]);
     }
 
-    // call this function on the user choosing a local file from the menu
-    const uploadFile = (e) => {
-        if (e.target.files[0] && e.target.files[0].type === 'image/jpeg') {
-            // revoke previous file object url
-            URL.revokeObjectURL(file);
 
-            // set the file to the chosen user file which will be sent to the api backend
-            setFile(e.target.files[0]);
-
-            // set the image to a pointer to the blob itself, which will be used to render
-            // the image on the screen
-            setImage(URL.createObjectURL(e.target.files[0]));
-        }
+    const handlePredict = () => {
+        console.log('predict method: TODO...')
     }
+
 
     return (
         <div>
             {/* Hero component */}
-            <div className="hero is-primary">
-                <div className="hero-body">
-                    <p className="title">
+            <div className='hero is-primary'>
+                <div className='hero-body'>
+                    <p className='title'>
                         Object Detection Capstone Project
                     </p>
-                    <p className="subtitle">
+                    <p className='subtitle'>
                         Created by Scott Gibson
                     </p>
                 </div>
             </div>
 
-            {/* left column: image, right column: api output */}
+            {/* Columns */}
             <div className='columns is-mobile mt-4'>
-                {/* left column */}
+                {/* left column - Image Input and User Buttons */}
                 <div className='column'>
-                    <figure className='image block user-image'>
-                        <img src={image ? image : carImg} alt='prediction'></img>
+                    {/* User Uploaded Image */}
+                    <figure className='image block is-square'>
+                        <img src={imageURL} alt='user'></img>
                     </figure>
 
-                    {<div className='file is-warning'>
-                        {/* Upload button */}
+                    <div className='file is-warning'>
+                        {/* Image File Input */}
                         <label className='file-label'>
-                            <input className="file-input" type="file" onChange={uploadFile} />
+                            <input className='file-input'
+                                type='file'
+                                accept='image/*'
+                                name='input-image'
+                                onChange={onImageChange}
+                            />
                             <span className='file-cta'>
-                                Upload
+                                {/* <span className='file-icon'>
+                                    <i className='fas fa-upload'></i>
+                                </span> */}
+                                <span className='file-label'>
+                                    Upload
+                                </span>
                             </span>
                         </label>
-                        {/* Predict button */}
-                        <button className='button is-success ml-2' onClick={queryDetectApi} disabled={!file}>
+                        {/* Predict Button */}
+                        <button className='button is-success ml-2' onClick={handlePredict}>
                             Predict
                         </button>
-                    </div>}
+                    </div>
                 </div>
 
-                {/* right column */}
+                {/* right column - Nothing yet */}
                 <div className='column'>
-                    <p className='title'>Click upload to choose an image, then hit 'Predict'</p>
-                    <p className='title'>Confidence threshold set to: 0.5</p>
+                    <p className='title'>Unused Column</p>
                 </div>
             </div>
         </div >

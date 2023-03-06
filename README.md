@@ -21,8 +21,7 @@ bounding boxes and labels over our original image.
 
 ## Production notes
 
-Followed this guide for hosting my site on AWS
-https://adamraudonis.medium.com/how-to-deploy-a-website-on-aws-with-docker-flask-react-from-scratch-d0845ebd9da4
+Build the frontend using 'npm run build', and then sync the frontend to an AWS S3 bucket
 
 ---
 
@@ -42,5 +41,4 @@ https://adamraudonis.medium.com/how-to-deploy-a-website-on-aws-with-docker-flask
 
 ## References
 
-- Flask backend with PyTorch: https://pytorch.org/tutorials/intermediate/flask_rest_api_tutorial.html
-- Converting bytestring to blob: https://stackoverflow.com/questions/16245767/creating-a-blob-from-a-base64-string-in-javascript
+
