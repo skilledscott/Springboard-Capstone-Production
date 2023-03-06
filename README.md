@@ -12,16 +12,20 @@ bounding boxes and labels over our original image.
 
 - User should be able to upload an image and view them on the
   main page.
-- User should be able to click a button that queries the backend
-  prediction api.
-- The user should be able to view those bounding box predictions
+- User should be able to click a button that queries a prediction api.
+- The user should be able to view those bounding box predictions drawn
   over the original image.
 
 ---
 
 ## Production notes
 
-Build the frontend using 'npm run build', and then sync the frontend to an AWS S3 bucket
+Build the frontend using 'npm run build', and then sync the frontend to an AWS S3 bucket. (Note: the bucket needed to
+be made with ACL allowed.)
+
+- cd frontend
+- npm run build
+- aws s3 sync build/ s3://tfjs-bucket --acl public-read
 
 ---
 

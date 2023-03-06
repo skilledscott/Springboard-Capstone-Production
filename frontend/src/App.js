@@ -1,11 +1,21 @@
 import { useState, useEffect } from 'react';
+import * as tf from '@tensorflow/tfjs'
+import * as cocossd from '@tensorflow-models/coco-ssd';
 
 import './styles/mystyles.css';
 
 const App = () => {
     const [image, setImage] = useState(null);
     const [imageURL, setImageURL] = useState('');
+    const [isLoading, setIsLoading] = useState(true);
+    const [model, setModel] = useState(null);
 
+    useEffect(() => {
+        loadModel().then((model) => {
+            setIsLoading(false);
+            setModel(model);
+        });
+    }, []);
 
     useEffect(() => {
         if (image == null) return;
@@ -13,13 +23,18 @@ const App = () => {
     }, [image]);
 
 
+    const loadModel = async () => {
+        const model = await cocossd.load();
+        return model;
+    }
+
     const onImageChange = (e) => {
         setImage(e.target.files[0]);
     }
 
 
-    const handlePredict = () => {
-        console.log('predict method: TODO...')
+    const handlePredict = async () => {
+
     }
 
 
@@ -74,6 +89,7 @@ const App = () => {
                 {/* right column - Nothing yet */}
                 <div className='column'>
                     <p className='title'>Unused Column</p>
+                    <p>{isLoading ? 'Loading model...' : 'Model Loaded'}</p>
                 </div>
             </div>
         </div >
