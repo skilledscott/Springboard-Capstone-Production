@@ -33,8 +33,11 @@ const App = () => {
     }
 
 
-    const handlePredict = async () => {
-
+    const handlePredict = () => {
+        const img = document.getElementById('img');
+        model.detect(img).then(predictions => {
+            console.log('prediction: ', predictions);
+        })
     }
 
 
@@ -58,7 +61,7 @@ const App = () => {
                 <div className='column'>
                     {/* User Uploaded Image */}
                     <figure className='image block is-square'>
-                        <img src={imageURL} alt='user'></img>
+                        <img src={imageURL} alt='user' id='img'></img>
                     </figure>
 
                     <div className='file is-warning'>
