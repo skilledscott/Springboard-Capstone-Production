@@ -63,24 +63,27 @@ const App = () => {
     const handlePredict = () => {
         model.detect(canvasRef.current).then(preds => {
             console.log('prediction: ', preds);
-            drawBBoxes(preds);
+
+            // draw bounding boxes on canvas image
+            drawBoxes(preds);
         });
     }
 
 
-    const drawBBoxes = (preds) => {
-        const pred = preds[0];
-        const x = pred.bbox[0];
-        const y = pred.bbox[1];
-        const width = pred.bbox[2];
-        const height = pred.bbox[3];
+    const drawBoxes = (preds) => {
+        const canvas = canvasRef.current;
+        const context = canvas.getContext('2d');
+        context.strokeStyle = 'green';
+        context.lineWidth = 4;
 
-        const canvas = document.getElementById('image-canvas');
-        const ctx = canvas.getContext('2d');
+        preds.map(pred => {
+            const x = pred.bbox[0];
+            const y = pred.bbox[1];
+            const width = pred.bbox[2];
+            const height = pred.bbox[3];
 
-        console.log('here')
-
-        ctx.strokeRect(x, y, width, height);
+            context.strokeRect(x, y, width, height);
+        })
     }
 
 
@@ -132,8 +135,8 @@ const App = () => {
 
                 {/* right column - Nothing yet */}
                 <div className='column'>
-                    <p className='title'>Unused Column</p>
-                    <p>{isLoading ? 'Loading model...' : 'Model Loaded'}</p>
+                    <p className='title is-3'>Model State</p>
+                    <p className='title is-4'>{isLoading ? 'Loading model...' : 'Model Loaded'}</p>
                 </div>
             </div>
         </div >
