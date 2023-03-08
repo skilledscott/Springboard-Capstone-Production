@@ -4,7 +4,27 @@ Production repository for my Machine Learning UC San Diego
 Extended Studies Capstone project.
 
 We will use pretrained object detection methods to render
-bounding boxes and labels over our original image.
+bounding boxes and labels over a given input image.
+
+---
+
+## Usage
+
+After pulling this repository, open a terminal in the frontend/ directory and run
+'npm start'. This runs the React app in development mode, and gives you a localhost
+url to view the page.
+
+The user is currently able to upload a local image from their machine, and click the
+'predict' button to display bounding boxes over objects of interest.
+
+---
+
+## Deployed Product
+
+The final product is deployed on AWS using S3 buckets for storage, and CloudFront to host
+the actual site.
+
+It can be visited by going to this link: https://d9f7uy5rshlp3.cloudfront.net/
 
 ---
 
@@ -44,5 +64,3 @@ be made with ACL allowed.)
 ---
 
 ## References
-
-
