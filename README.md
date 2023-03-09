@@ -8,6 +8,10 @@ bounding boxes and labels over our original image.
 
 ---
 
+Deployed AWS CloudFront web app: https://d9f7uy5rshlp3.cloudfront.net
+
+---
+
 ## Minimum Viable Product Definition of Done
 
 - User should be able to upload an image and view them on the
@@ -25,7 +29,7 @@ be made with ACL allowed.)
 
 - cd frontend
 - npm run build
-- aws s3 sync build/ s3://tfjs-bucket --acl public-read
+- aws s3 sync build/ s3://<bucket_name> --acl public-read
 
 ---
 
@@ -45,4 +49,6 @@ be made with ACL allowed.)
 
 ## References
 
-
+Coco-ssd package used for inference
+- https://www.npmjs.com/package/@tensorflow-models/coco-ssd
+- https://github.com/tensorflow/tfjs-models/tree/master/coco-ssd
