@@ -1,14 +1,13 @@
 import { useState, useEffect, useRef } from 'react';
-import * as tf from '@tensorflow/tfjs'
 import * as cocossd from '@tensorflow-models/coco-ssd';
 
 import './styles/mystyles.css';
 
 const App = () => {
-    const [image, setImage] = useState(null);
     const [imageURL, setImageURL] = useState('');
     const [isLoading, setIsLoading] = useState(true);
     const [model, setModel] = useState(null);
+    const [preds, setPreds] = useState([]);
 
     const canvasRef = useRef(null);
 
@@ -28,33 +27,44 @@ const App = () => {
     }
 
 
-    // Init the canvas on page load by setting the size and setting fill to black
     useEffect(() => {
+        // clear canvas content and fill to black on page load, and image redraw
         const canvas = canvasRef.current;
         const context = canvas.getContext('2d');
 
-        // Fill canvas
         context.fillStyle = '#000000';
         context.fillRect(0, 0, context.canvas.width, context.canvas.height);
-    }, [])
 
-
-    useEffect(() => {
+        // if imageURL is null, there is no image to draw
         if (imageURL == null) return;
 
+        // create a new image to put in the canvas, set it's url to the user uploaded image blob
         var img = new Image();
         img.src = imageURL;
         img.onload = () => {
-            const canvas = canvasRef.current;
-            const context = canvas.getContext("2d");
-            context.drawImage(img, 0, 0);
+            const canvasDim = [canvas.width, canvas.height];
+            const imageDim = [img.width, img.height];
+
+            // scale the image to fit in the canvas while keeping its aspect ratio
+            const largerIdx = img.width >= img.height ? 0 : 1;
+            const rat = canvasDim[largerIdx] / imageDim[largerIdx];
+
+            const imgWidthScaled = img.width * rat;
+            const imgHeightScaled = img.height * rat;
+
+            const dx = (canvas.width - imgWidthScaled) / 2;
+            const dy = (canvas.height - imgHeightScaled) / 2;
+
+            // draw the image in the canvas
+            context.drawImage(img, 0, 0, img.width, img.height, dx, dy, imgWidthScaled, imgHeightScaled);
         }
     }, [imageURL])
 
 
     // On user image upload, set the imageURL state to point to the created image blob
     const onImageChange = (e) => {
-        setImage(e.target.files[0]);
+        if (!e.target.files[0]) return;
+        setPreds([])
         setImageURL(URL.createObjectURL(e.target.files[0]));
     }
 
@@ -62,9 +72,7 @@ const App = () => {
     // On pressing the predict button, call the model to detect
     const handlePredict = () => {
         model.detect(canvasRef.current).then(preds => {
-            console.log('prediction: ', preds);
-
-            // draw bounding boxes on canvas image
+            setPreds(preds);
             drawBoxes(preds);
         });
     }
@@ -73,10 +81,11 @@ const App = () => {
     const drawBoxes = (preds) => {
         const canvas = canvasRef.current;
         const context = canvas.getContext('2d');
-        context.strokeStyle = 'green';
-        context.lineWidth = 4;
+        context.strokeStyle = 'red';
+        context.lineWidth = 3;
 
-        preds.map(pred => {
+        console.log(preds);
+        preds.forEach(pred => {
             const x = pred.bbox[0];
             const y = pred.bbox[1];
             const width = pred.bbox[2];
@@ -102,7 +111,7 @@ const App = () => {
             </div>
 
             {/* Columns */}
-            <div className='columns is-mobile mt-4'>
+            <div className='columns mt-4'>
                 {/* left column - Image Input and User Buttons */}
                 <div className='column'>
                     {/* User Uploaded Image */}
@@ -135,8 +144,19 @@ const App = () => {
 
                 {/* right column - Nothing yet */}
                 <div className='column'>
-                    <p className='title is-3'>Model State</p>
-                    <p className='title is-4'>{isLoading ? 'Loading model...' : 'Model Loaded'}</p>
+                    <p className={`title is-2 ${isLoading ? 'has-text-danger' : 'has-text-success'}`}>
+                        Coco-ssd Object Detection Model
+                    </p>
+                    <p className='is-size-4 has-text-weight-semibold mb-3'>
+                        Discovered objects: confidence score
+                    </p>
+                    {preds.map((pred, _id) => {
+                        return (
+                            <div key={_id}>
+                                <p>{preds[_id]['class']}: {preds[_id]['score']}</p>
+                            </div>
+                        )
+                    })}
                 </div>
             </div>
         </div >
