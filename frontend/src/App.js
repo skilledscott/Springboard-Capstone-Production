@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import * as cocossd from '@tensorflow-models/coco-ssd';
+import * as ssdClasses from '@tensorflow-models/coco-ssd/dist/classes';
 
 import './styles/mystyles.css';
 
@@ -7,7 +8,9 @@ const App = () => {
     const [imageURL, setImageURL] = useState('');
     const [isLoading, setIsLoading] = useState(true);
     const [model, setModel] = useState(null);
+    const [modelInfo, setModelInfo] = useState(null);
     const [preds, setPreds] = useState([]);
+    const [showInfo, setShowInfo] = useState(false);
 
     const canvasRef = useRef(null);
 
@@ -18,6 +21,27 @@ const App = () => {
             setIsLoading(false);
             setModel(model);
         });
+    }, [])
+
+    // get model meta information and store in modelInfo state var
+    useEffect(() => {
+        // create an alert that shows information about the model to the user
+        // The model is 'SSD-COCO: a pretrained object detection model using the
+        // SSD architecture trained on the COCO Dataset.
+        //
+        // Then, after a space or two, display all the classes the model is responsible for
+
+        // collect all classes the model recognizes into classArr
+        let classArr = [];
+        for (let key in ssdClasses.CLASSES) {
+            classArr.push(ssdClasses.CLASSES[key]['displayName']);
+        }
+
+        setModelInfo(
+            <div className='notification is-info'>
+                {classArr.map((elem, _id) => <p key={_id}>{elem}</p>)}
+            </div>
+        );
     }, [])
 
     // Loads and returns ssd model
@@ -127,9 +151,6 @@ const App = () => {
                                 onChange={onImageChange}
                             />
                             <span className='file-cta'>
-                                {/* <span className='file-icon'>
-                                    <i className='fas fa-upload'></i>
-                                </span> */}
                                 <span className='file-label'>
                                     Upload
                                 </span>
@@ -139,10 +160,18 @@ const App = () => {
                         <button className='button is-success ml-2' onClick={handlePredict}>
                             Predict
                         </button>
+                        {/* Info Button -> Displays a bulma-modal element with info about the object detection algorithm. */}
+                        <button className='button is-info ml-2' onClick={() => { setShowInfo(true) }}>Info</button>
+                        <div className={`modal ${showInfo ? 'is-active' : ''}`}>
+                            <div className="modal-background" onClick={() => { setShowInfo(false) }}></div>
+                            <div className="modal-content">
+                                {modelInfo}
+                            </div>
+                        </div>
                     </div>
                 </div>
 
-                {/* right column - Nothing yet */}
+                {/* right column - lists labels and confidence scores found by model */}
                 <div className='column'>
                     <p className={`title is-2 ${isLoading ? 'has-text-danger' : 'has-text-success'}`}>
                         Coco-ssd Object Detection Model
@@ -153,7 +182,7 @@ const App = () => {
                     {preds.map((pred, _id) => {
                         return (
                             <div key={_id}>
-                                <p>{preds[_id]['class']}: {preds[_id]['score']}</p>
+                                <p>{pred['class']}: {pred['score']}</p>
                             </div>
                         )
                     })}
