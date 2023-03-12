@@ -32,10 +32,6 @@ It can be visited by going to this link: https://d9f7uy5rshlp3.cloudfront.net/
 
 ---
 
-Deployed AWS CloudFront web app: https://d9f7uy5rshlp3.cloudfront.net
-
----
-
 ## Minimum Viable Product Definition of Done
 
 - User should be able to upload an image and view them on the

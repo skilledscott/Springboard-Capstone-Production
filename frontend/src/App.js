@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import * as cocossd from '@tensorflow-models/coco-ssd';
+import * as ssdClasses from '@tensorflow-models/coco-ssd/dist/classes';
 
 import './styles/mystyles.css';
 
@@ -7,7 +8,10 @@ const App = () => {
     const [imageURL, setImageURL] = useState('');
     const [isLoading, setIsLoading] = useState(true);
     const [model, setModel] = useState(null);
+    const [modelInfo, setModelInfo] = useState(null);
     const [preds, setPreds] = useState([]);
+    const [showInfo, setShowInfo] = useState(false);
+    const [allowPredict, setAllowPredict] = useState(false);
 
     const canvasRef = useRef(null);
 
@@ -25,6 +29,28 @@ const App = () => {
         const model = await cocossd.load();
         return model;
     }
+
+
+    // get model meta information and store in modelInfo state var
+    useEffect(() => {
+        // create an alert that shows information about the model to the user
+        // The model is 'SSD-COCO: a pretrained object detection model using the
+        // SSD architecture trained on the COCO Dataset.
+        //
+        // Then, after a space or two, display all the classes the model is responsible for
+
+        // collect all classes the model recognizes into classArr
+        let classArr = [];
+        for (let key in ssdClasses.CLASSES) {
+            classArr.push(ssdClasses.CLASSES[key]['displayName']);
+        }
+
+        setModelInfo(
+            <div className='notification is-info'>
+                {classArr.map((elem, _id) => <p key={_id}>{elem}</p>)}
+            </div>
+        );
+    }, [])
 
 
     useEffect(() => {
@@ -57,6 +83,7 @@ const App = () => {
 
             // draw the image in the canvas
             context.drawImage(img, 0, 0, img.width, img.height, dx, dy, imgWidthScaled, imgHeightScaled);
+            setAllowPredict(true);
         }
     }, [imageURL])
 
@@ -74,6 +101,7 @@ const App = () => {
         model.detect(canvasRef.current).then(preds => {
             setPreds(preds);
             drawBoxes(preds);
+            setAllowPredict(false);
         });
     }
 
@@ -81,8 +109,10 @@ const App = () => {
     const drawBoxes = (preds) => {
         const canvas = canvasRef.current;
         const context = canvas.getContext('2d');
-        context.strokeStyle = 'red';
-        context.lineWidth = 3;
+        context.strokeStyle = 'red';    // color of bounding boxes
+        context.lineWidth = 3;          // line weight of bounding boxes
+        context.font = '16px serif';    // font size and family
+        context.fillStyle = 'red';
 
         console.log(preds);
         preds.forEach(pred => {
@@ -92,6 +122,7 @@ const App = () => {
             const height = pred.bbox[3];
 
             context.strokeRect(x, y, width, height);
+            context.fillText(pred.class, x, y - 10);
         })
     }
 
@@ -127,22 +158,27 @@ const App = () => {
                                 onChange={onImageChange}
                             />
                             <span className='file-cta'>
-                                {/* <span className='file-icon'>
-                                    <i className='fas fa-upload'></i>
-                                </span> */}
                                 <span className='file-label'>
                                     Upload
                                 </span>
                             </span>
                         </label>
                         {/* Predict Button */}
-                        <button className='button is-success ml-2' onClick={handlePredict}>
+                        <button className='button is-success ml-2' disabled={!allowPredict} onClick={handlePredict}>
                             Predict
                         </button>
+                        {/* Info Button -> Displays a bulma-modal element with info about the object detection algorithm. */}
+                        <button className='button is-info ml-2' onClick={() => { setShowInfo(true) }}>Info</button>
+                        <div className={`modal ${showInfo ? 'is-active' : ''}`}>
+                            <div className="modal-background" onClick={() => { setShowInfo(false) }}></div>
+                            <div className="modal-content">
+                                {modelInfo}
+                            </div>
+                        </div>
                     </div>
                 </div>
 
-                {/* right column - Nothing yet */}
+                {/* right column - lists labels and confidence scores found by model */}
                 <div className='column'>
                     <p className={`title is-2 ${isLoading ? 'has-text-danger' : 'has-text-success'}`}>
                         Coco-ssd Object Detection Model
@@ -153,7 +189,7 @@ const App = () => {
                     {preds.map((pred, _id) => {
                         return (
                             <div key={_id}>
-                                <p>{preds[_id]['class']}: {preds[_id]['score']}</p>
+                                <p>{pred['class']}: {pred['score']}</p>
                             </div>
                         )
                     })}
