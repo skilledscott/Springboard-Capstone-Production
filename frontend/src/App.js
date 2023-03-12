@@ -105,8 +105,10 @@ const App = () => {
     const drawBoxes = (preds) => {
         const canvas = canvasRef.current;
         const context = canvas.getContext('2d');
-        context.strokeStyle = 'red';
-        context.lineWidth = 3;
+        context.strokeStyle = 'red';    // color of bounding boxes
+        context.lineWidth = 3;          // line weight of bounding boxes
+        context.font = '16px serif';    // font size and family
+        context.fillStyle = 'red';
 
         console.log(preds);
         preds.forEach(pred => {
@@ -116,6 +118,7 @@ const App = () => {
             const height = pred.bbox[3];
 
             context.strokeRect(x, y, width, height);
+            context.fillText(pred.class, x, y - 10);
         })
     }
 
