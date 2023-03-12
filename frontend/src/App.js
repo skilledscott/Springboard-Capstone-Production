@@ -11,6 +11,7 @@ const App = () => {
     const [modelInfo, setModelInfo] = useState(null);
     const [preds, setPreds] = useState([]);
     const [showInfo, setShowInfo] = useState(false);
+    const [allowPredict, setAllowPredict] = useState(false);
 
     const canvasRef = useRef(null);
 
@@ -22,6 +23,13 @@ const App = () => {
             setModel(model);
         });
     }, [])
+
+    // Loads and returns ssd model
+    const loadModel = async () => {
+        const model = await cocossd.load();
+        return model;
+    }
+
 
     // get model meta information and store in modelInfo state var
     useEffect(() => {
@@ -43,12 +51,6 @@ const App = () => {
             </div>
         );
     }, [])
-
-    // Loads and returns ssd model
-    const loadModel = async () => {
-        const model = await cocossd.load();
-        return model;
-    }
 
 
     useEffect(() => {
@@ -81,6 +83,7 @@ const App = () => {
 
             // draw the image in the canvas
             context.drawImage(img, 0, 0, img.width, img.height, dx, dy, imgWidthScaled, imgHeightScaled);
+            setAllowPredict(true);
         }
     }, [imageURL])
 
@@ -98,6 +101,7 @@ const App = () => {
         model.detect(canvasRef.current).then(preds => {
             setPreds(preds);
             drawBoxes(preds);
+            setAllowPredict(false);
         });
     }
 
@@ -160,7 +164,7 @@ const App = () => {
                             </span>
                         </label>
                         {/* Predict Button */}
-                        <button className='button is-success ml-2' onClick={handlePredict}>
+                        <button className='button is-success ml-2' disabled={!allowPredict} onClick={handlePredict}>
                             Predict
                         </button>
                         {/* Info Button -> Displays a bulma-modal element with info about the object detection algorithm. */}
