@@ -3,23 +3,26 @@
 Production repository for my Machine Learning UC San Diego
 Extended Studies Capstone project.
 
-We will use pretrained object detection methods to render
-bounding boxes and labels over a given input image.
+We will use a pretrained object detection model to find and draw bounding boxes
+over a given input image.
+
+The detection model used is an SSD architecture trained on the 2017 COCO dataset,
+and hosted by tensorflow.js from the model Hub.
 
 ---
 
 ## Usage
 
-After pulling this repository, open a terminal in the frontend/ directory and run
-'npm install' to install npm dependencies. (Due to the use of the coco-ssd model, it doesn't
-properly install on my computer, so I use 'npm install --force'. I don't like this solution,
-but it's necessary until I improve the model I'm using.)
-
-To run the web app in development mode, run 'npm start' and go to the localhost url provided 
-by the terminal.
+Clone this repository and open a console in the frontend/ directory. Then run the following
+steps in the console.
+- 'npm install' to install project dependencies
+- 'npm run css-build' to build the page styling
+- 'npm start' to run the react app locally
 
 The user is currently able to upload a local image from their machine, and click the
 'predict' button to display bounding boxes over objects of interest.
+
+The 'info' button displays the objects the detection model can find.
 
 ---
 
@@ -44,8 +47,8 @@ It can be visited by going to this link: https://d9f7uy5rshlp3.cloudfront.net/
 
 ## User Stories to implement
 
-- User should see labels over bounding boxes
-- User should be able to see which objects the model is
+- (DONE) User should see labels over bounding boxes
+- (DONE) User should be able to see which objects the model is
   looking for.
 - User should be able to hover over a bounding box and
   highlight respective label/score on the right side
@@ -54,8 +57,7 @@ It can be visited by going to this link: https://d9f7uy5rshlp3.cloudfront.net/
 
 ## Production notes
 
-Build the frontend using 'npm run build', and then sync the frontend to an AWS S3 bucket. (Note: the bucket needed to
-be made with ACL allowed.)
+Using the following commands, build the frontend and sync to an AWS S3 bucket.
 
 - cd frontend
 - npm run build
