@@ -5,18 +5,26 @@ import * as ssdClasses from '@tensorflow-models/coco-ssd/dist/classes';
 import './styles/mystyles.css';
 
 const App = () => {
-    const [imageURL, setImageURL] = useState('');
-    const [isLoading, setIsLoading] = useState(true);
-    const [model, setModel] = useState(null);
-    const [modelInfo, setModelInfo] = useState(null);
-    const [preds, setPreds] = useState([]);
-    const [showInfo, setShowInfo] = useState(false);
-    const [allowPredict, setAllowPredict] = useState(false);
+    /*********************************************************
+     * State variables
+     *********************************************************/
 
-    const canvasRef = useRef(null);
+    const [imageURL, setImageURL] = useState('');            // string pointer to browser image blob
+    const [isLoading, setIsLoading] = useState(true);        // set to true as model loads
+    const [model, setModel] = useState(null);                // the tfjs model used in the web app
+    const [modelInfo, setModelInfo] = useState(null);        // model meta information
+    const [preds, setPreds] = useState([]);                  // list of predictions from model on image
+    const [showInfo, setShowInfo] = useState(false);         // set to true when 'info' button is pressed
+    const [allowPredict, setAllowPredict] = useState(false); // set to false after image predictions are fetched
+
+    const canvasRef = useRef(null); // canvasRef.current returns the main canvas element
 
 
-    // On page start, load ssd model
+    /*********************************************************
+     * Effect hooks
+     *********************************************************/
+
+    // On page render: load ssd model using the loadModel() function
     useEffect(() => {
         loadModel().then((model) => {
             setIsLoading(false);
@@ -24,27 +32,25 @@ const App = () => {
         });
     }, [])
 
-    // Loads and returns ssd model
+    // Loads and returns the npm installed coco-ssd model
     const loadModel = async () => {
         const model = await cocossd.load();
         return model;
     }
 
 
-    // get model meta information and store in modelInfo state var
+    // On page render: get model meta information and store in modelInfo state var
     useEffect(() => {
-        // create an alert that shows information about the model to the user
-        // The model is 'SSD-COCO: a pretrained object detection model using the
-        // SSD architecture trained on the COCO Dataset.
-        //
-        // Then, after a space or two, display all the classes the model is responsible for
-
         // collect all classes the model recognizes into classArr
         let classArr = [];
         for (let key in ssdClasses.CLASSES) {
             classArr.push(ssdClasses.CLASSES[key]['displayName']);
         }
 
+        /* 
+         * Map the list into a notification that will display whenever the 'info' button
+         * is pressed.
+         */
         setModelInfo(
             <div className='notification is-info'>
                 {classArr.map((elem, _id) => <p key={_id}>{elem}</p>)}
@@ -53,21 +59,26 @@ const App = () => {
     }, [])
 
 
+    // On imageURL change: draw the new imageURL on the canvas.
     useEffect(() => {
-        // clear canvas content and fill to black on page load, and image redraw
         const canvas = canvasRef.current;
         const context = canvas.getContext('2d');
 
+        // clear canvas content and fill to black on page load, and image redraw
         context.fillStyle = '#000000';
         context.fillRect(0, 0, context.canvas.width, context.canvas.height);
 
-        // if imageURL is null, there is no image to draw
+        // if imageURL is null, return, as there is no image to draw
         if (imageURL == null) return;
 
-        // create a new image to put in the canvas, set it's url to the user uploaded image blob
+        // create a new image to put in the canvas, set it's url to the imageURL
         var img = new Image();
         img.src = imageURL;
         img.onload = () => {
+            /* 
+             * After the image finishes loading, scale the image to the canvas size
+             * while maintaining its aspect ratio.
+             */
             const canvasDim = [canvas.width, canvas.height];
             const imageDim = [img.width, img.height];
 
@@ -88,7 +99,20 @@ const App = () => {
     }, [imageURL])
 
 
-    // On user image upload, set the imageURL state to point to the created image blob
+    /*********************************************************
+     * Functions
+     *********************************************************/
+
+    /*
+     * onImageChange: onChange function
+     *
+     * @param e: event object generated from <input> onChange event
+     * 
+     * When the 'upload' file input finishes, take the first file in the event 'e' object,
+     * and create the imageURL using URL.createObjectURL. Note that since the file input
+     * only accepts image type files, that logic is done already, and we don't need to
+     * check that we are being given an image.
+     */
     const onImageChange = (e) => {
         if (!e.target.files[0]) return;
         setPreds([])
@@ -96,7 +120,12 @@ const App = () => {
     }
 
 
-    // On pressing the predict button, call the model to detect
+    /*
+     * handlePredict: onClick function
+     * 
+     * Query the object detection model to get predictions. When those are found, set the
+     * preds state var and draw bounding boxes over the canvas.
+     */
     const handlePredict = () => {
         model.detect(canvasRef.current).then(preds => {
             setPreds(preds);
@@ -106,6 +135,13 @@ const App = () => {
     }
 
 
+    /*
+     * drawBoxes:
+     * 
+     * @param preds: list of predictions
+     * 
+     * Draws bounding boxes over the canvas image.
+     */
     const drawBoxes = (preds) => {
         const canvas = canvasRef.current;
         const context = canvas.getContext('2d');
@@ -127,6 +163,9 @@ const App = () => {
     }
 
 
+    /*********************************************************
+     * React component return
+     *********************************************************/
     return (
         <div>
             {/* Hero component */}

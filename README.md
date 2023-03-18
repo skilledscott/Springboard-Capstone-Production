@@ -50,7 +50,7 @@ It can be visited by going to this link: https://d9f7uy5rshlp3.cloudfront.net/
 - (DONE) User should see labels over bounding boxes
 - (DONE) User should be able to see which objects the model is
   looking for.
-- User should be able to hover over a bounding box and
+- (NOT IMPLEMENTED) User should be able to hover over a bounding box and
   highlight respective label/score on the right side
 
 ---
@@ -67,11 +67,10 @@ Using the following commands, build the frontend and sync to an AWS S3 bucket.
 
 ## Backlog user stories
 
-- The user can upload a directory with many images, along with 
-  optional labels for bounding boxes.
 - The user can fetch predictions on batches of many images.
 - The user can choose to draw comparisons of the bounding boxes
-  they provide, alongside the model predictions.
+  they provide, alongside the model predictions, and get a score for how
+  well the model performed.
 - The user can choose between many different models saved in
   the backend.
 - The user can go to a separate page and create bounding box labels
